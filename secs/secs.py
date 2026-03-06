@@ -1,8 +1,12 @@
 from pathlib import Path
 
+from secs.scanner.Scanner import scan_tokens
 
-def parse_script(file: str) -> str:
 
+def parse_script(src: str) -> str:
+    tokens = scan_tokens(src)
+    for token in tokens:
+        print(token)
 
 def parse_file(path: Path):
     try:
@@ -15,3 +19,14 @@ def parse_file(path: Path):
         print(f"Error reading to file {path}!")
 
 
+def _run_main(script):
+    parse_file(script)
+
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) == 2:
+        _run_main(sys.argv[1])
+    else:
+        print("usage: secs [script]")
