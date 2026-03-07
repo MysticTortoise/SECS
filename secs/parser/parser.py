@@ -1,23 +1,27 @@
+from secs.error.EvalError import EvalError
 from secs.error.ParseError import ParseError
 from secs.error.error import error
 from secs.parser.Expression import *
-from secs.parser.ExpressionDeclaration import ExpressionDeclaration
+from secs.parser.Statement import Statement
 from secs.scanner.Token import Token
 from secs.scanner.TokenType import TokenType
 
 _tokens: list[Token]
 _current: int
 
-def parse_tokens(tokens: list[Token]) -> list[ExpressionDeclaration]:
+def parse_tokens(tokens: list[Token]) -> dict[str,Statement]:
     global _tokens, _current
 
     _tokens = tokens
     _current = 0
 
-    statements: list[ExpressionDeclaration] = list()
+    statements: dict[str,Statement] = dict()
 
     while not _is_at_end():
-        statements.append(_statement())
+        statement = _statement()
+        if statement.name.lexeme in statements.keys():
+            raise EvalError("Attempt to redefine a statement!")
+        statements[statement.name.lexeme] = statement
 
     return statements
 
@@ -62,14 +66,14 @@ def _error(token: Token, message: str) -> ParseError:
     return ParseError()
 
 
-def _statement() -> ExpressionDeclaration:
+def _statement() -> Statement:
     name = _consume(TokenType.IDENTIFIER, "Expected expression name!")
     _consume(TokenType.EQUAL, "Expected '=' symbol to come after expression name!")
 
     expression = _expression()
     _consume(TokenType.SEMICOLON, "Expected ';' after expression!")
 
-    return ExpressionDeclaration(name, expression)
+    return Statement(name, expression)
 
 
 # Expression Parsing ===========================================================
@@ -79,13 +83,13 @@ def _expression() -> Expression:
 def _e_ternary() -> Expression:
     expr = _e_equality()
 
-    while(_match(TokenType.QUESTION)):
-        leftOp = _previous()
+    while _match(TokenType.QUESTION):
+        left_op = _previous()
         middle = _e_equality()
-        rightOp = _consume(TokenType.COLON, "Expected : after expression!")
+        right_op = _consume(TokenType.COLON, "Expected : after expression!")
         right = _e_equality()
 
-        expr = TernaryExpr(expr, leftOp, middle, rightOp, right)
+        expr = TernaryExpr(expr, left_op, middle, right_op, right)
 
     return expr
 
@@ -134,10 +138,10 @@ def _e_factor() -> Expression:
     return expr
 
 def _e_unary() -> Expression:
-    if _match(TokenType.MINUS):
+    if _match(TokenType.MINUS, TokenType.BANG):
         operator = _previous()
-        rightExpr = _e_unary()
-        return UnaryExpr(operator, rightExpr)
+        right_expr = _e_unary()
+        return UnaryExpr(operator, right_expr)
 
     return _e_primary()
 

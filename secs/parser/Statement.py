@@ -1,13 +1,12 @@
-from typing import Any
-
+from secs.parser.Expression import Expression
 from secs.scanner.Token import Token
 
 
-class ExpressionDeclaration:
+class Statement:
     name: Token
-    expression: Any
+    expression: Expression
 
-    def __init__(self, name: Token, expression):
+    def __init__(self, name: Token, expression: Expression):
         self.name = name
         self.expression = expression
 

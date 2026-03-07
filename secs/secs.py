@@ -1,15 +1,19 @@
 from pathlib import Path
 
+from secs.evaluator.SECSContext import SECSContext
+from secs.evaluator.evaluator import evaluate_statement
 from secs.parser.parser import parse_tokens
 from secs.scanner.scanner import scan_tokens
 
 
-def parse_script(src: str) -> str:
+def parse_script(src: str):
     tokens = scan_tokens(src)
     statements = parse_tokens(tokens)
 
-    for statement in statements:
-        print(statement)
+    context = SECSContext(statements)
+
+    for statement in statements.keys():
+        print(evaluate_statement(statement, context))
 
 def parse_file(path: Path):
     try:
