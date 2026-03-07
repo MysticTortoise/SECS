@@ -108,6 +108,12 @@ def _scan_token():
     elif c == "/":
         _add_token(TokenType.SLASH)
         return
+    elif c == "?":
+        _add_token(TokenType.QUESTION)
+        return
+    elif c == ":":
+        _add_token(TokenType.COLON)
+        return
     elif c == "#":
         while _peek() != "\n" and not _is_at_end():
             _advance()

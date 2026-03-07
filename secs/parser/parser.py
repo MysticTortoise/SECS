@@ -1,6 +1,6 @@
 from secs.error.ParseError import ParseError
 from secs.error.error import error
-from secs.parser.Expression import LiteralExpr, IdentifierExpr, GroupingExpr, UnaryExpr
+from secs.parser.Expression import *
 from secs.parser.ExpressionDeclaration import ExpressionDeclaration
 from secs.scanner.Token import Token
 from secs.scanner.TokenType import TokenType
@@ -29,7 +29,7 @@ def _previous() -> Token:
     return _tokens[_current - 1]
 
 def _is_at_end() -> bool:
-    return _peek().type != TokenType.EOF
+    return _peek().type == TokenType.EOF
 
 def _advance() -> Token:
     global _current
@@ -71,10 +71,69 @@ def _statement() -> ExpressionDeclaration:
 
     return ExpressionDeclaration(name, expression)
 
-def _expression():
-    return _e_equality()
 
-def _e_unary():
+# Expression Parsing ===========================================================
+def _expression() -> Expression:
+    return _e_ternary()
+
+def _e_ternary() -> Expression:
+    expr = _e_equality()
+
+    while(_match(TokenType.QUESTION)):
+        leftOp = _previous()
+        middle = _e_equality()
+        rightOp = _consume(TokenType.COLON, "Expected : after expression!")
+        right = _e_equality()
+
+        expr = TernaryExpr(expr, leftOp, middle, rightOp, right)
+
+    return expr
+
+def _e_equality() -> Expression:
+    expr = _e_comparison()
+
+    while _match(TokenType.EQUAL_EQUAL, TokenType.BANG_EQUAL):
+        operator = _previous()
+        right = _e_comparison()
+
+        expr = BinaryExpr(expr, operator, right)
+
+    return expr
+
+def _e_comparison() -> Expression:
+    expr = _e_term()
+
+    while _match(TokenType.GREATER, TokenType.GREATER_EQUAL, TokenType.LESS, TokenType.LESS_EQUAL):
+        operator = _previous()
+        right = _e_term()
+
+        expr = BinaryExpr(expr, operator, right)
+
+    return expr
+
+def _e_term() -> Expression:
+    expr = _e_factor()
+
+    while _match(TokenType.PLUS, TokenType.MINUS):
+        operator = _previous()
+        right = _e_factor()
+
+        expr = BinaryExpr(expr, operator, right)
+
+    return expr
+
+def _e_factor() -> Expression:
+    expr = _e_unary()
+
+    while _match(TokenType.STAR, TokenType.SLASH):
+        operator = _previous()
+        right = _e_unary()
+
+        expr = BinaryExpr(expr, operator, right)
+
+    return expr
+
+def _e_unary() -> Expression:
     if _match(TokenType.MINUS):
         operator = _previous()
         rightExpr = _e_unary()
@@ -82,7 +141,7 @@ def _e_unary():
 
     return _e_primary()
 
-def _e_primary():
+def _e_primary() -> Expression:
     if _match(TokenType.NUMBER):
         return LiteralExpr(_previous().literal)
     if _match(TokenType.IDENTIFIER):

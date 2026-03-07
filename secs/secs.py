@@ -1,12 +1,15 @@
 from pathlib import Path
 
+from secs.parser.parser import parse_tokens
 from secs.scanner.scanner import scan_tokens
 
 
 def parse_script(src: str) -> str:
     tokens = scan_tokens(src)
-    for token in tokens:
-        print(token)
+    statements = parse_tokens(tokens)
+
+    for statement in statements:
+        print(statement)
 
 def parse_file(path: Path):
     try:

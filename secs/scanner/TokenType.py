@@ -26,6 +26,9 @@ class TokenType(Enum):
     LESS_EQUAL = auto()
     LESS = auto()
 
+    QUESTION = auto()
+    COLON = auto()
+
     IDENTIFIER = auto()
     NUMBER = auto()
 

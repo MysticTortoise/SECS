@@ -10,3 +10,6 @@ class ExpressionDeclaration:
     def __init__(self, name: Token, expression):
         self.name = name
         self.expression = expression
+
+    def __str__(self):
+        return f"{self.name.lexeme} - [{self.expression}]"
