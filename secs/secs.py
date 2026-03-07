@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from secs.scanner.Scanner import scan_tokens
+from secs.scanner.scanner import scan_tokens
 
 
 def parse_script(src: str) -> str:

@@ -1,5 +1,5 @@
 from secs.Value import SECSValue
-from secs.error import error
+from secs.error.error import error
 from secs.scanner.Token import Token
 from secs.scanner.TokenType import TokenType
 
