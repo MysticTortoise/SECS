@@ -37,4 +37,4 @@ class SECSContext:
         for statement in self.statements.values():
             if len(statement.arguments) > 0:
                 continue
-            print(self.eval_statement(statement.name.lexeme))
+            print(f"{statement.name.lexeme} - {self.eval_statement(statement.name.lexeme)}")
