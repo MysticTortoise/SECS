@@ -6,28 +6,43 @@ from secs.parser.parser import parse_tokens
 from secs.scanner.scanner import scan_tokens
 
 
-def parse_script(src: str):
+def parse_script(src: str, context: SECSContext | None) -> SECSContext:
     tokens = scan_tokens(src)
     statements = parse_tokens(tokens)
 
-    context = SECSContext(statements)
+    if context is None:
+        context = SECSContext(statements)
+    else:
+        context.add_statements(statements)
 
-    for statement in statements.keys():
-        print(evaluate_statement(statement, context))
+    context.print_all_statements()
 
-def parse_file(path: Path):
+    return context
+
+def parse_scripts(srcs: list[str], context: SECSContext | None):
+    for src in srcs:
+        context = parse_script(src, context)
+    return context
+
+def parse_file(path: Path, context: SECSContext | None) -> SECSContext:
     try:
         with open(path, "r") as script_file:
             content = script_file.read()
-            return parse_script(content)
+            return parse_script(content, context)
     except FileNotFoundError:
         print(f"File {path} not found!")
     except IOError:
         print(f"Error reading to file {path}!")
 
+    return context
+
+def parse_files(paths: list[Path], context: SECSContext | None) -> SECSContext:
+    for path in paths:
+        context = parse_file(path, context)
+    return context
 
 def _run_main(script):
-    parse_file(script)
+    parse_file(script, None)
 
 
 if __name__ == "__main__":

@@ -9,19 +9,16 @@ from secs.scanner.TokenType import TokenType
 _tokens: list[Token]
 _current: int
 
-def parse_tokens(tokens: list[Token]) -> dict[str,Statement]:
+def parse_tokens(tokens: list[Token]) -> list[Statement]:
     global _tokens, _current
 
     _tokens = tokens
     _current = 0
 
-    statements: dict[str,Statement] = dict()
+    statements: list[Statement] = list()
 
     while not _is_at_end():
-        statement = _statement()
-        if statement.name.lexeme in statements.keys():
-            raise EvalError("Attempt to redefine a statement!")
-        statements[statement.name.lexeme] = statement
+        statements.append(_statement())
 
     return statements
 
