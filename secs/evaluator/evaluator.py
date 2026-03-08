@@ -7,12 +7,20 @@ from secs.scanner.TokenType import TokenType
 
 def evaluate_statement(name: str, context: SECSContext) -> SECSValue:
     if not (name in context.statements.keys()):
-        raise EvalError(f"{name} is not a valid expression!")
+        if context.parent is None:
+            raise EvalError(f"{name} is not a valid expression!")
+        else:
+            return evaluate_statement(name, context.parent)
+
     if name in context.visited_statements:
         raise EvalError(f"Recursive call of {name} detected!")
 
+    statement = context.statements[name]
+    # len(statement.arguments) != len(arguments):
+        #raise EvalError(f"Invalid arguments for function expression! Expected {len(statement.arguments)} arguments but got {len(arguments)}.")
+
     context.visited_statements.append(name)
-    val = _evaluate_statement(context.statements[name], context)
+    val = _evaluate_statement(statement, context)
     context.visited_statements.pop()
 
     return val
@@ -31,6 +39,8 @@ def _evaluate_expression(expression: Expression, context: SECSContext) -> SECSVa
         return _eval_grouping(expression, context)
     if isinstance(expression, IdentifierExpr):
         return _eval_identifier(expression, context)
+    if isinstance(expression, CallExpr):
+        return _eval_call(expression, context)
     if isinstance(expression, LiteralExpr):
         return _eval_literal(expression)
 
@@ -90,6 +100,19 @@ def _eval_grouping(expr: GroupingExpr, context: SECSContext) -> SECSValue:
 
 def _eval_identifier(expr: IdentifierExpr, context: SECSContext) -> SECSValue:
     return evaluate_statement(expr.name.lexeme, context)
+
+def _eval_call(expr: CallExpr, context: SECSContext) -> SECSValue:
+    calling_statement = context.get_statement(expr.callee.lexeme)
+    sub_context = SECSContext([context.get_statement(calling_statement.name.lexeme)], context)
+
+    for i in range(len(expr.args)):
+        arg_name = calling_statement.arguments[i]
+        arg_statement = Statement(arg_name,expr.args[i], list())
+        sub_context.add_statement(arg_statement)
+
+    return evaluate_statement(calling_statement.name.lexeme, sub_context)
+
+
 
 def _eval_literal(expr: LiteralExpr) -> SECSValue:
     return expr.value

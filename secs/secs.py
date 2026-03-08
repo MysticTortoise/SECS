@@ -1,17 +1,24 @@
 from pathlib import Path
 
+import secs.error.error
 from secs.evaluator.SECSContext import SECSContext
-from secs.evaluator.evaluator import evaluate_statement
 from secs.parser.parser import parse_tokens
 from secs.scanner.scanner import scan_tokens
 
 
 def parse_script(src: str, context: SECSContext | None) -> SECSContext:
+    secs.error.error.had_error = False
+
     tokens = scan_tokens(src)
+    if secs.error.error.had_error:
+        return context
+
     statements = parse_tokens(tokens)
+    if secs.error.error.had_error:
+        return context
 
     if context is None:
-        context = SECSContext(statements)
+        context = SECSContext(statements, None)
     else:
         context.add_statements(statements)
 

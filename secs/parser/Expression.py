@@ -35,6 +35,19 @@ class GroupingExpr(Expression):
     def __str__(self):
         return f"({self.expression})"
 
+class CallExpr(Expression):
+    callee: Token
+    paren: Token
+    args: list[Expression]
+
+    def __init__(self, callee: Token, paren:Token, args:list[Expression]):
+        self.callee = callee
+        self.paren = paren
+        self.args = args
+
+    def __str(self):
+        return f"{self.callee}({self.args})"
+
 class UnaryExpr(Expression):
     operator: Token
     right: Expression

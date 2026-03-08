@@ -18,7 +18,15 @@ def parse_tokens(tokens: list[Token]) -> list[Statement]:
     statements: list[Statement] = list()
 
     while not _is_at_end():
-        statements.append(_statement())
+        try:
+            statements.append(_statement())
+        except ParseError:
+            _advance()
+            while not _is_at_end():
+                if _previous().type == TokenType.SEMICOLON:
+                    break
+                _advance()
+        
 
     return statements
 
@@ -60,17 +68,26 @@ def _consume(type: TokenType, message: str) -> Token:
 
 def _error(token: Token, message: str) -> ParseError:
     error(token, message)
-    return ParseError()
+    return ParseError(message)
 
 
 def _statement() -> Statement:
     name = _consume(TokenType.IDENTIFIER, "Expected expression name!")
+
+    params = list()
+    if _match(TokenType.LEFT_PAREN):
+        while True:
+            params.append(_consume(TokenType.IDENTIFIER, "Expected parameter name."))
+            if not _match(TokenType.COMMA):
+                break
+        _consume(TokenType.RIGHT_PAREN, "Expected ')' to match '(' in function-expression definition.")
+
     _consume(TokenType.EQUAL, "Expected '=' symbol to come after expression name!")
 
     expression = _expression()
     _consume(TokenType.SEMICOLON, "Expected ';' after expression!")
 
-    return Statement(name, expression)
+    return Statement(name, expression, params)
 
 
 # Expression Parsing ===========================================================
@@ -146,10 +163,26 @@ def _e_primary() -> Expression:
     if _match(TokenType.NUMBER):
         return LiteralExpr(_previous().literal)
     if _match(TokenType.IDENTIFIER):
-        return IdentifierExpr(_previous())
+        identifier = _previous()
+        if _match(TokenType.LEFT_PAREN):
+            return _e_call(identifier)
+        else:
+            return IdentifierExpr(identifier)
+
     if _match(TokenType.LEFT_PAREN):
         expression = _expression()
         _consume(TokenType.RIGHT_PAREN, "Expected ')' after expression to match ')'.")
         return GroupingExpr(expression)
 
     raise _error(_peek(), "Expected expression.")
+
+def _e_call(identifier: Token):
+    arguments = list()
+    while True:
+        arguments.append(_expression())
+        if not _match(TokenType.COMMA):
+            break
+
+    paren = _consume(TokenType.RIGHT_PAREN, "Expected ')' after arguments.")
+
+    return CallExpr(identifier, paren, arguments)

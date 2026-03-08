@@ -1,3 +1,5 @@
 first = 349.23 + second * 23;
 second = 222;
 third = second;
+function(one, two, three) = one + two + three;
+fourth = function(1, 2, 3);

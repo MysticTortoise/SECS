@@ -1,2 +1,3 @@
 class ParseError(Exception):
-    pass
+    def __init__(self, message: str):
+        super().__init__(f"SECS Parse Error: {message}")
