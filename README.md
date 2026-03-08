@@ -26,8 +26,7 @@ Expressions are a sequence of number literals and identifiers separated by opera
 - Parentheses will group expressions accordingly.
 
 ### Arguments
-`NOT IMPLEMENTED YET`  
-Statements may optionally have parentheses, listing several literals that must be passed when referring to this expression.
+Statements may optionally have parentheses, listing several names that must be passed when referring to this expression.
 When argument names clash with expression names, the argument name takes precedence.
 
 ### Example
@@ -61,3 +60,8 @@ SECS is designed to be as simple as possible. Any changes or additions to the la
 
 If more advanced scripting capabilities are required, consider using a proper scripting language like Python instead.
 Features like control flow and any form of state will not be added. SECS is intended to be functional and direct.
+
+## Contributing
+This interpreter is bad. Really bad. It is my first ever unique interpreter and I only gained the knowledge to make it
+through reading the first 10 chapters of the beautiful [Crafting Interpreters](https://craftinginterpreters.com/) book.
+If you'd like to improve the interpreter, feel free to fork it and/or open a PR. If you do, thank you!
