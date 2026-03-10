@@ -1,0 +1,19 @@
+[project]
+name = "secslang"
+version = "0.1.0"
+authors = [
+  { name="MysticTortoise", email="shadowknight7788@gmail.com" },
+]
+description = "Simple Expression Configuration Script"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/MysticTortoise/SECS"
+Issues = "https://github.com/MysticTortoise/SECS/issues"

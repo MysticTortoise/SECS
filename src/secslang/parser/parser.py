@@ -1,10 +1,9 @@
-from secs.error.EvalError import EvalError
-from secs.error.ParseError import ParseError
-from secs.error.error import error
-from secs.parser.Expression import *
-from secs.parser.Statement import Statement
-from secs.scanner.Token import Token
-from secs.scanner.TokenType import TokenType
+from ..error.ParseError import ParseError
+from ..error.error import error
+from ..scanner.TokenType import TokenType
+
+from .Expression import *
+from .Statement import Statement
 
 _tokens: list[Token]
 _current: int

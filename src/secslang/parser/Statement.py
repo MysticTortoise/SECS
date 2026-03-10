@@ -1,5 +1,5 @@
-from secs.parser.Expression import Expression
-from secs.scanner.Token import Token
+from .Expression import Expression
+from ..scanner.Token import Token
 
 
 class Statement:

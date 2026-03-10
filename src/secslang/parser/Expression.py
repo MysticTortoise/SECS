@@ -1,7 +1,7 @@
 from abc import ABC
 
-from secs.Value import SECSValue
-from secs.scanner.Token import Token
+from ..Value import SECSValue
+from ..scanner.Token import Token
 
 
 class Expression(ABC):

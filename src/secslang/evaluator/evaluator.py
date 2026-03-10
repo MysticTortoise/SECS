@@ -1,8 +1,9 @@
-from secs.error.EvalError import EvalError
-from secs.evaluator.SECSContext import SECSContext
-from secs.parser.Expression import *
-from secs.parser.Statement import Statement
-from secs.scanner.TokenType import TokenType
+from ..error.EvalError import EvalError
+from ..parser.Expression import *
+from ..parser.Statement import Statement
+from ..scanner.TokenType import TokenType
+
+from .SECSContext import SECSContext
 
 
 def evaluate_statement(name: str, context: SECSContext) -> SECSValue:

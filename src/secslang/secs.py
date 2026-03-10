@@ -1,20 +1,20 @@
 from pathlib import Path
 
-import secs.error.error
-from secs.evaluator.SECSContext import SECSContext
-from secs.parser.parser import parse_tokens
-from secs.scanner.scanner import scan_tokens
+from .error import error
+from .evaluator.SECSContext import SECSContext
+from .parser.parser import parse_tokens
+from .scanner.scanner import scan_tokens
 
 
 def parse_script(src: str, context: SECSContext | None) -> SECSContext:
-    secs.error.error.had_error = False
+    error.had_error = False
 
     tokens = scan_tokens(src)
-    if secs.error.error.had_error:
+    if error.had_error:
         return context
 
     statements = parse_tokens(tokens)
-    if secs.error.error.had_error:
+    if error.had_error:
         return context
 
     if context is None:
@@ -58,4 +58,4 @@ if __name__ == "__main__":
     if len(sys.argv) == 2:
         _run_main(sys.argv[1])
     else:
-        print("usage: secs [script]")
+        print("usage: src [script]")

@@ -1,7 +1,7 @@
 from typing import Any
 
-from secs.Value import SECSValue
-from secs.scanner.TokenType import TokenType
+from ..Value import SECSValue
+from .TokenType import TokenType
 
 class Token:
     type: TokenType

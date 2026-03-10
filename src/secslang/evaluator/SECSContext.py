@@ -1,6 +1,6 @@
-from secs.Value import SECSValue
-from secs.error.EvalError import EvalError
-from secs.parser.Statement import Statement
+from ..Value import SECSValue
+from ..error.EvalError import EvalError
+from ..parser.Statement import Statement
 
 class SECSContext:
     parent: SECSContext | None
@@ -30,7 +30,7 @@ class SECSContext:
 
 
     def eval_statement(self, name: str) -> SECSValue:
-        from secs.evaluator.evaluator import evaluate_statement
+        from .evaluator import evaluate_statement
         return evaluate_statement(name, self)
 
     def print_all_statements(self):

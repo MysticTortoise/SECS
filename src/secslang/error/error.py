@@ -1,7 +1,7 @@
 import sys
 
-from secs.scanner.Token import Token
-from secs.scanner.TokenType import TokenType
+from ..scanner.Token import Token
+from ..scanner.TokenType import TokenType
 
 had_error : bool = False
 

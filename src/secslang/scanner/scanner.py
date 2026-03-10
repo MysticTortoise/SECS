@@ -1,7 +1,7 @@
-from secs.Value import SECSValue
-from secs.error.error import error
-from secs.scanner.Token import Token
-from secs.scanner.TokenType import TokenType
+from ..Value import SECSValue
+from ..error.error import error
+from ..scanner.Token import Token
+from ..scanner.TokenType import TokenType
 
 source: str
 
