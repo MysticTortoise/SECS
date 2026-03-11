@@ -22,7 +22,7 @@ def parse_script(src: str, context: SECSContext | None) -> SECSContext:
     else:
         context.add_statements(statements)
 
-    context.print_all_statements()
+    #context.print_all_statements()
 
     return context
 
