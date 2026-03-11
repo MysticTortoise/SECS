@@ -33,6 +33,12 @@ class SECSContext:
         from .evaluator import evaluate_statement
         return evaluate_statement(name, self)
 
+    def eval_statement_default(self, name: str, default: SECSValue) -> SECSValue:
+        try:
+            return self.eval_statement(name)
+        except EvalError:
+            return default
+
     def print_all_statements(self):
         for statement in self.statements.values():
             if len(statement.arguments) > 0:
