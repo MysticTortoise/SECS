@@ -1,1 +1,1 @@
-from . import secs
+from .secs import *
