@@ -71,7 +71,7 @@ def _is_digit(c : str):
 
 def _is_alpha(c : str):
     n = ord(c)
-    return (ord('a') < n < ord('z')) or (ord('A') < n < ord('Z')) or n == ord('_')
+    return (ord('a') <= n <= ord('z')) or (ord('A') <= n <= ord('Z')) or n == ord('_') or n == ord('.')
 
 def _is_alphanumeric(c: str):
     return _is_alpha(c) or _is_digit(c)
@@ -146,7 +146,7 @@ def _scan_token():
         _scan_identifier()
         return
 
-    error(line, f"Unexpected character {c}.")
+    error(line, f"Unexpected character {c} in {source[start:current]}.")
 
 
 
