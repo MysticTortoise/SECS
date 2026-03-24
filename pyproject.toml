@@ -1,6 +1,6 @@
 [project]
 name = "secslang"
-version = "0.1.2"
+version = "0.1.3"
 authors = [
   { name="MysticTortoise", email="shadowknight7788@gmail.com" },
 ]

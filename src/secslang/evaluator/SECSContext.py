@@ -1,5 +1,6 @@
 from ..Value import SECSValue
 from ..error.EvalError import EvalError
+from ..error.NoStatementError import NoStatementError
 from ..parser.Statement import Statement
 
 class SECSContext:
@@ -36,7 +37,7 @@ class SECSContext:
     def eval_statement_default(self, name: str, default: SECSValue) -> SECSValue:
         try:
             return self.eval_statement(name)
-        except EvalError:
+        except NoStatementError:
             return default
 
     def print_all_statements(self):

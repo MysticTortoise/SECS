@@ -1,4 +1,5 @@
 from ..error.EvalError import EvalError
+from ..error.NoStatementError import NoStatementError
 from ..parser.Expression import *
 from ..parser.Statement import Statement
 from ..scanner.TokenType import TokenType
@@ -7,11 +8,17 @@ from .SECSContext import SECSContext
 
 
 def evaluate_statement(name: str, context: SECSContext) -> SECSValue:
+    return _evaluate_statement(name, context, True)
+
+def _evaluate_statement(name: str, context: SECSContext, toplevel: bool) -> SECSValue:
     if not (name in context.statements.keys()):
         if context.parent is None:
-            raise EvalError(f"{name} is not a valid expression!")
+            if toplevel:
+                raise NoStatementError(name)
+            else:
+                raise EvalError(f"{name} is not a valid expression!")
         else:
-            return evaluate_statement(name, context.parent)
+            return _evaluate_statement(name, context.parent, toplevel)
 
     if name in context.visited_statements:
         raise EvalError(f"Recursive call of {name} detected!")
@@ -21,15 +28,15 @@ def evaluate_statement(name: str, context: SECSContext) -> SECSValue:
         #raise EvalError(f"Invalid arguments for function expression! Expected {len(statement.arguments)} arguments but got {len(arguments)}.")
 
     context.visited_statements.append(name)
-    val = _evaluate_statement(statement, context)
+    val = _eval_statement(statement, context)
     context.visited_statements.pop()
 
     return val
 
-def _evaluate_statement(statement: Statement, context: SECSContext) -> SECSValue:
-    return _evaluate_expression(statement.expression, context)
+def _eval_statement(statement: Statement, context: SECSContext) -> SECSValue:
+    return _eval_expression(statement.expression, context)
 
-def _evaluate_expression(expression: Expression, context: SECSContext) -> SECSValue:
+def _eval_expression(expression: Expression, context: SECSContext) -> SECSValue:
     if isinstance(expression, TernaryExpr):
         return _eval_ternary(expression, context)
     if isinstance(expression, BinaryExpr):
@@ -51,14 +58,14 @@ def _is_truthy(val: SECSValue) -> bool:
     return val != 0
 
 def _eval_ternary(expr: TernaryExpr, context: SECSContext):
-    if _is_truthy(_evaluate_expression(expr.left, context)):
-        return _evaluate_expression(expr.middle, context)
+    if _is_truthy(_eval_expression(expr.left, context)):
+        return _eval_expression(expr.middle, context)
     else:
-        return _evaluate_expression(expr.right, context)
+        return _eval_expression(expr.right, context)
 
 def _eval_binary(expr: BinaryExpr, context: SECSContext):
-    left = _evaluate_expression(expr.left, context)
-    right = _evaluate_expression(expr.right, context)
+    left = _eval_expression(expr.left, context)
+    right = _eval_expression(expr.right, context)
 
     if expr.operator.type == TokenType.PLUS:
         return left + right
@@ -87,9 +94,9 @@ def _eval_binary(expr: BinaryExpr, context: SECSContext):
 
 def _eval_unary(expr: UnaryExpr, context: SECSContext) -> SECSValue:
     if expr.operator.type == TokenType.MINUS:
-        return -(_evaluate_expression(expr.right, context))
+        return -(_eval_expression(expr.right, context))
     if expr.operator.type == TokenType.BANG:
-        val = _evaluate_expression(expr.right, context)
+        val = _eval_expression(expr.right, context)
         return val if _is_truthy(val) else 0
 
     raise EvalError(f"Unknown unary operator {expr.operator.lexeme}")
@@ -97,10 +104,10 @@ def _eval_unary(expr: UnaryExpr, context: SECSContext) -> SECSValue:
 
 
 def _eval_grouping(expr: GroupingExpr, context: SECSContext) -> SECSValue:
-    return _evaluate_expression(expr.expression, context)
+    return _eval_expression(expr.expression, context)
 
 def _eval_identifier(expr: IdentifierExpr, context: SECSContext) -> SECSValue:
-    return evaluate_statement(expr.name.lexeme, context)
+    return _evaluate_statement(expr.name.lexeme, context, False)
 
 def _eval_call(expr: CallExpr, context: SECSContext) -> SECSValue:
     calling_statement = context.get_statement(expr.callee.lexeme)
@@ -111,7 +118,7 @@ def _eval_call(expr: CallExpr, context: SECSContext) -> SECSValue:
         arg_statement = Statement(arg_name,expr.args[i], list())
         sub_context.add_statement(arg_statement)
 
-    return evaluate_statement(calling_statement.name.lexeme, sub_context)
+    return _evaluate_statement(calling_statement.name.lexeme, sub_context, False)
 
 
 
